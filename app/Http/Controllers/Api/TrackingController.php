@@ -8,44 +8,46 @@ use App\Models\Shipments;
 use App\Models\Boxes;
 class TrackingController extends Controller
 {
-    public function tracking(Request $request) {
-        $booking_no = $request->booking_no;
-        $shipments = Shipments::where('booking_number', $booking_no)->with('receiver')->first();
-
+    public function tracking(Request $request)
+    {
+        $booking_no = $request->booking_no;  
+        $shipments = Shipments::where('booking_number', $booking_no)
+            ->with('receiver', 'boxes', 'boxes.boxStatuses', 'boxes.boxStatuses.status')
+            ->first();
+    
         if (isset($shipments)) {
-            $querys = [];
-            foreach ($shipments->boxes as $i => $shipment) {
-                $querys[$i] = Boxes::with('boxStatuses', 'boxStatuses.status')
-                    ->where('box_name', $shipment->box_name)->first();
-            }
-
-            $boxeses = $querys;
             $data = collect();
-            foreach ($querys as $j => $query) {
+    
+            foreach ($shipments->boxes as $j => $box) {
                 $item = collect();
-                $item->put('box_names', $query->box_name);
-
+                $item->put('box_name', $box->box_name);
+    
                 $statuses = collect();
-                if (isset($query->boxStatuses[0])) {
-                    foreach ($query->boxStatuses as $k => $status) {
-                        $list_task = collect();
-                        $list_task->put('status', $status->status->name);
-                        $list_task->put('comment', $status->comment);
-                        $list_task->put('date', $status->updated_at->format('d-m-Y'));
-                        $statuses->put($k, $list_task);
-                    }
-                    $item->put('statuses', $statuses);
-                } else {
+                foreach ($box->boxStatuses as $status) {
                     $list_task = collect();
-                    $list_task->put('status', $shipments->statusVal->name);
-                    $list_task->put('comment', '');
-                    $list_task->put('date', $shipments->updated_at->format('d-m-Y'));
-                    $item->put('statuses',array($list_task));
+                    $list_task->put('status', $status->status->name);
+                    $list_task->put('comment', $status->comment);
+                    $list_task->put('date', $status->updated_at->format('d-m-Y')); // Ensure all statuses' dates are added
+                    $statuses->push($list_task);
                 }
-                $data->put($j, $item);
+    
+                // Handle case where no statuses exist for a box
+                if ($statuses->isEmpty()) {
+                    $list_task = collect([
+                        'status' => $shipments->statusVal->name ?? 'Unknown',
+                        'comment' => '',
+                        'date' => $shipments->updated_at->format('d-m-Y'),
+                    ]);
+                    $statuses->push($list_task);
+                }
+    
+                $item->put('statuses', $statuses);
+                $data->push($item);
             }
+    
             $comment = $shipments->boxes->firstWhere('comment', '!=', null)['comment'] ?? null;
-            $adress = collect([
+    
+            $address = collect([
                 'invoice_number' => $shipments->booking_number,
                 'invoice_date' => $shipments->created_at->format('d/m/Y'),
                 'receiver_name' => $shipments->receiver->name ?? '',
@@ -58,19 +60,21 @@ class TrackingController extends Controller
                 'receiver_boxes' => count($shipments->boxes) ?? '',
                 'receiver_comment' => $comment ?? ''
             ]);
-
+    
             return response()->json([
                 'success' => true,
                 'data' => $data,
-                'adress' => $adress,
+                'address' => $address,
             ]);
         } else {
             return response()->json([
                 'success' => false,
-                'message' => 'no data is available'
+                'message' => 'No data is available'
             ]);
         }
     }
+    
+    
 
 
 }

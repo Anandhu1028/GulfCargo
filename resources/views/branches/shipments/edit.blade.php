@@ -153,6 +153,7 @@ body{
                                                         <option value='' selected="selected">Select</option>
                                                         @foreach (get_customers('sender')->where('branch_id', branch()->id) as $sender)
                                                         <option value="{{ $sender->id }}"
+                                                        {{ ($shipment->sender_id== $sender->id) ? 'selected' : "" }}
                                                         data-identification_type="{{$sender->identification_type ?? ''}}"
                                                         data-identification_number="{{$sender->identification_number ?? ''}}"
                                                         data-name="{{$sender->name ?? ''}}"
@@ -208,6 +209,7 @@ body{
                                                     <option value='' selected="selected">Select</option>
                                                     @foreach (get_customers('receiver')->where('branch_id', branch()->id) as $receiver)
                                                     <option value="{{ $receiver->id }}"
+                                                    {{ ($shipment->receiver_id== $receiver->id) ? 'selected' : "" }}
                                                         data-identification_type="{{$receiver->identification_type ?? ''}}"
                                                         data-identification_number="{{$receiver->identification_number ?? ''}}"
                                                         data-name="{{$receiver->name ?? ''}}"
@@ -514,157 +516,98 @@ body{
 
                                                         </div>
                                                     </div>
-                                                    <div class="row ">
-                                                        <p style="font-size: 12px;margin: unset; margin-left: 9px; color:red;" id="noBoxFound{{$i+1}}"></p>
-                                                        <div class="col-12 d-flex">
-                                                            <input type="text" class="form-control col-3 oldBoxNo{{$i+1}}" placeholder="Box number">
-                                                            <button type="button"  class="btn btn-primary col-1 ml-2 oldBoxFill{{$i+1}} fillAdress" data-boxId={{$i+1}} >Fill</button>
-                                                        </div>
-                                                        <div class="col-5 box_details">
-                                                            <div class="form-group ">
-                                                                <label>Sender/Customer</label>
-                                                                {{-- <select name="box_sender_id{{$i+1}}" id="sender_id" class="form-control select2">
-                                                                    <option value="">Select</option>
-                                                                    @foreach (get_customers('sender') as $sender)
-                                                                        <option value="{{ $sender->id }}"
-                                                                            {{ ($box->sender_id == $sender->id) ? 'selected' : "" }}
-                                                                            >{{ $sender->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('sender_id')
-                                                                    <span class="text-danger">{{ $message }}</span>
-                                                                @enderror --}}
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Name</label>
-                                                                <input type="text" name="sender_name{{$i+1}}" value="{{ $box->sender_name }}" class="form-control sender_name">
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Address</label>
-                                                                <textarea name="sender_address{{$i+1}}"  cols="10" rows="10" class="form-control sender_address" style="height: 45px;">{{ $box->sender_address }}</textarea>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Pin</label>
-                                                                <input type="text" name="sender_pin{{$i+1}}" value="{{ $box->sender_pin }}" class="form-control sender_pin" >
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Mobile</label>
-                                                                <input type="text" name="sender_mob{{$i+1}}" value="{{ $box->sender_mob }}" class="form-control sender_mob">
-                                                            </div>
-
-                                                            <div class="form-group mb-2">
-                                                                <label>ID Type</label>
-                                                                <select name="sender_id_type{{$i+1}}" id="" class="form-control sender_id_type">
-                                                                    @if ($box->sender_id_type == 'Aadhar' || $box->sender_id_type == 'Aadhaar Number')
-                                                                        <option value="Aadhaar Number" selected>Aadhaar Number</option>
-                                                                        <option value="Passport Number">Passport Number</option>
-                                                                    @else
-                                                                        <option value="Aadhaar Number">Aadhaar Number</option>
-                                                                        <option value="Passport Number" selected>Passport Number</option>
-                                                                    @endif
-
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="form-group mb-2">
-                                                                <label>ID</label>
-                                                                <input type="text" name="sender_id_no{{$i+1}}" value="{{ $box->sender_id_no }}" class="form-control sender_id_no" data-index="{{$i+1}}">
-                                                            </div>
-
-                                                            <div class="form-group mb-2">
-                                                                <label>ID Image</label>
-                                                                <input type="hidden" name="sender_id_image_value{{$i+1}}" value="{{$box->sender_id_image}}" class="sender_id_image_value">
-                                                                <input type="file" name="sender_id_image{{$i+1}}[]" value="{{ $box->sender_id_image }}" class="form-control sender_id_image" multiple>
-                                                                @if ($box->sender_id_image)
-                                                                    @foreach (json_decode($box->sender_id_image, true) as  $image)
-                                                                    <a href="{{asset($image)}}" class="pt-4 pb-2 pl-3" download><img data-src="{{asset($image)}} " class="id_img" alt="img" width="100" height="50" class="pt-2" style="border: solid 1px; margin-top: 5px;"> </a>
-                                                                    @endforeach
-                                                                @else
-                                                                    <h6 class="pt-2">No file is uploaded</h6>
-                                                                @endif
-                                                            </div>
-
-                                                        </div>
-                                                        <div class="col-5 box_details">
-                                                            <div class="form-group ">
-                                                                <label>Receiver/Customer</label>
-                                                                {{-- <select name="box_receiver_id{{$i+1}}" id="receiver_id"
-                                                                        class="form-control select2">
-                                                                        <option value="">Select</option>
-                                                                    @foreach (get_customers('receiver') as $receiver)
-                                                                        <option value="{{ $receiver->id }}"
-                                                                        {{ ($box->receiver_id == $receiver->id) ? 'selected' : "" }}
-                                                                        >{{ $receiver->name }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                @error('receiver_id')
-                                                                    <span class="text-danger">{{ $message }}</span>
-                                                                @enderror --}}
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Name</label>
-                                                                <input type="text" name="receiver_name{{$i+1}}" value="{{ $box->receiver_name }}" class="form-control receiver_name">
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Address</label>
-                                                                <textarea name="receiver_address{{$i+1}}"  cols="10" rows="10" class="form-control receiver_address" style="height: 45px;">{{ $box->receiver_address }}</textarea>
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Pin</label>
-                                                                <input type="text" name="receiver_pin{{$i+1}}" value="{{ $box->receiver_pin }}" class="form-control receiver_pin">
-                                                            </div>
-
-                                                            <div class="form-group">
-                                                                <label>Mobile</label>
-                                                                <input type="text" name="receiver_mob{{$i+1}}" value="{{ $box->receiver_mob }}" class="form-control receiver_mob">
-                                                            </div>
-
-                                                            <div class="form-group mb-2">
-                                                                <label>ID Type</label>
-                                                                <select name="receiver_id_type{{$i+1}}" id="" class="form-control receiver_id_type">
-                                                                    @if ($box->receiver_id_type == 'Aadhar' || $box->receiver_id_type == 'Aadhaar Number' )
-                                                                        <option value="Aadhaar Number" selected>Aadhaar Number</option>
-                                                                        <option value="Passport Number">Passport Number</option>
-                                                                    @else
-                                                                        <option value="Aadhar">Aadhar</option>
-                                                                        <option value="Passport Number" selected>Passport Number</option>
-                                                                    @endif
-                                                                </select>
-                                                            </div>
-
-                                                            <div class="form-group mb-2">
-                                                                <label>ID</label>
-                                                                <input type="text" name="receiver_id_no{{$i+1}}" value="{{ $box->receiver_id_no }}" class="form-control receiver_id_no" data-index="{{$i+1}}">
-                                                            </div>
-
-                                                            <div class="form-group mb-2">
-                                                                <label>ID Image</label>
-                                                                <input type="hidden" name="receiver_id_image_value{{$i+1}}" value="{{$box->receiver_id_image}}" class="receiver_id_image_value">
-                                                                <input type="file" name="receiver_id_image{{$i+1}}[]" value="{{$box->receiver_id_image}}" class="form-control receiver_id_image" multiple>
-                                                                @if ($box->receiver_id_image)
-                                                                    @foreach (json_decode($box->receiver_id_image, true) as  $image)
-                                                                    <a href="{{asset($image)}}" class="pt-4 pb-2 pl-3" download><img data-src="{{asset($image)}} " class="id_img" alt="img" width="100" height="50" class="pt-2" style="border: solid 1px; margin-top: 5px;"> </a>
-                                                                    @endforeach
-                                                                @else
-                                                                    <h6 class="pt-2">No file is uploaded</h6>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-2">
+                                                    <div class="col-md-2">
                                                             <div class="form-group">
                                                                 <label>Weight</label>
                                                                 <input type="text" name="weight{{$i+1}}" value="{{ $box->weight }}" class="form-control weight">
                                                                 {{-- <input type="text" name="weight" value="{{$weight->weight?$weight->weight:''}}" class="form-control box-weight1"> --}}
                                                             </div>
                                                         </div>
-                                                    </div>
+                                                        <div class="row">
+                                        <div class="col-lg-6 col-md-12">
+                                         
+                                            <div class="row">
+                                                <div class="form-group col-md-10">
+                                                    <label>Sender/Customer</label>
+                                                    <select name="box_sender_id{{$i+1}}" id="box_sender_id{{$i+1}}" class="form-control select2">
+                                                        @foreach (get_customers('sender') as $sender)
+                                                            <option value="{{ $sender->id }}"
+                                                            {{ ($shipment->sender_id== $sender->id) ? 'selected' : "" }} 
+                                                            data-identification_type="{{$sender->identification_type ?? ''}}"
+                                                        data-identification_number="{{$sender->identification_number ?? ''}}"
+                                                        data-name="{{$sender->name ?? ''}}"
+                                                        data-email="{{$sender->email ?? ''}}"
+                                                        data-phone="{{$sender->phone ?? ''}}"
+                                                          data-address="{{$sender->address->address ?? ''}}"
+                                                         data-whatsapp_number="{{$sender->whatsapp_number ?? ''}}"
+                                                        data-country_code_phone="{{$sender->country_code_phone ?? ''}}"
+                                                        data-country_code_whatsapp="{{$sender->country_code_whatsapp ?? ''}}" 
+                                                        data-country_id="{{$sender->address->country_id ?? ''}}"
+                                                        data-state_id="{{$sender->address->state_id ?? ''}}"
+                                                        data-district_id="{{$sender->address->district_id ?? ''}}"
+                                                        data-city_id="{{$sender->address->city_id ?? ''}}"
+                                                        data-zip_code="{{$sender->address->zip_code ?? ''}}">
+                                                    {{ strtoupper($sender->name) }} - {{ $sender->phone }}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('sender_id')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+
+                                                </div>
+                                                <div class="col-md-2">
+                                                <button type="button" id="AddSender{{$i+1}}" class="btn btn-primary mt-sm-4"><i
+                                                class="fa fa-plus"></i></button>
+                                                            <button type="button" id="EditSender{{$i+1}}" class="btn btn-primary mt-sm-4"><i
+                                                            class="fa fa-pen"></i></button>
+                                                </div>
+
+                                            </div>
+                 
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            
+                                            <div class=" row">
+                                                <div class="form-group col-md-10">
+                                                    <label>Receiver/Customer</label>
+                                                    <select name="box_receiver_id{{$i+1}}" id="box_receiver_id{{$i+1}}"
+                                                            class="form-control select2">
+                                                        @foreach (get_customers('receiver') as $receiver)
+                                                            <option value="{{ $receiver->id }}"
+                                                            {{ ($shipment->receiver_id== $receiver->id) ? 'selected' : "" }}
+                                                            data-identification_type="{{$receiver->identification_type ?? ''}}"
+                                                        data-identification_number="{{$receiver->identification_number ?? ''}}"
+                                                        data-name="{{$receiver->name ?? ''}}"
+                                                        data-email="{{$receiver->email ?? ''}}"
+                                                        data-phone="{{$receiver->phone ?? ''}}"
+                                                          data-address="{{$receiver->address->address ?? ''}}"
+                                                         data-whatsapp_number="{{$receiver->whatsapp_number ?? ''}}"
+                                                        data-country_code_phone="{{$receiver->country_code_phone ?? ''}}"
+                                                        data-country_code_whatsapp="{{$receiver->country_code_whatsapp ?? ''}}" 
+                                                        data-country_id="{{$receiver->address->country_id ?? ''}}"
+                                                        data-state_id="{{$receiver->address->state_id ?? ''}}"
+                                                        data-district_id="{{$receiver->address->district_id ?? ''}}"
+                                                        data-city_id="{{$receiver->address->city_id ?? ''}}"
+                                                        data-zip_code="{{$receiver->address->zip_code ?? ''}}">
+                                                    {{ strtoupper($receiver->name) }} - {{ $receiver->phone }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('receiver_id')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" id="AddReceiver{{$i+1}}" class="btn btn-primary mt-4"><i
+                                                            class="fa fa-plus"></i></button>
+                                                            <button type="button" id="EditReceiver{{$i+1}}" class="btn btn-primary mt-4"><i
+                                                            class="fa fa-pen"></i></button>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div> 
                                                     <div class="body box_und_calc" id="packageinfo{{$i+1}}" >
                                                         <table class="table table-bordered packageinfo{{$i+1}}">
                                                             @foreach($box->packages as $j => $package)
@@ -783,11 +726,8 @@ body{
                                                                 <div class="form-group">
                                                                     <label>Packing</label>
                                                                     <select name='packing{{$i+1}}' data-no='{{$i+1}}' class='form-control box-packing' onchange="getBoxPackingVal(this);">
-                                                                        {{-- <option value=''>Select</option> --}}
+                                                                      
                                                                         <option value='2' selected >Cargo Packing</option>
-                                                                        {{-- <option {{ ($box->packing== 1) ? 'selected' : "" }} value='1'>Customer Packing</option>
-                                                                        <option {{ ($box->packing== 2) ? 'selected' : "" }} value='2'>Cargo Packing</option> --}}
-
                                                                     </select>
                                                                 </div>
 
@@ -805,25 +745,14 @@ body{
                                                                 </div>
                                                             </div>
 
-
-
-
-
-
                                                         <div class="col-md-1">
                                                             <div class="form-group">
-                                                                <label>Volume</label>
-                                                                {{-- <input type="text" name="unit_value{{$i+1}}" value="{{$box->unit_value}}" class="form-control box-unit-value" data-unit-value="{{$i+1}}"> --}}
+                                                                <label>Volume</label>                                                              
                                                                 <input type="text" name="unit_value{{$i+1}}" value="15.19" class="form-control box-unit-value" data-unit-value="{{$i+1}}">
 
                                                             </div>
                                                         </div>
-                                                        {{-- <div class="col-md-1">
-                                                            <div class="form-group">
-                                                                <label>Weight</label>
-                                                                <input type="text" name="weight{{$i+1}}" value="{{$box->weight}}" class="form-control box-weight" data-weight="{{$i+1}}">
-                                                            </div>
-                                                        </div> --}}
+                                                      
                                                         <div class="col-md-1">
                                                             <div class="form-group">
                                                                 <label>Rate</label>
@@ -840,7 +769,6 @@ body{
                                                             </div>
                                                         </div>
 
-
                                                         <div class="col-md-2" id="box_packing_charge{{$i+1}}">
                                                         <div class="form-group">
                                                             <label>Packing charge</label>
@@ -849,9 +777,6 @@ body{
 
                                                         </div>
                                                         </div>
-
-
-
 
                                                     </div>
                                                 </div>
@@ -863,31 +788,6 @@ body{
                                                 @endforeach
 
                                                 <div id="Container"> </div>
-
-
-
-                                            <!-- <div class="row" id="total-package" style="display:none;">
-                                                <table class="table table-bordered">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td width="25%"><h4>Total Amount : </h4></td>
-                                                            <td width="25%"><h4>
-                                                                <span id="totalPackageAmt" class="package-total-amount">{{ $grand_total_amount }}</span>
-                                                            </h4>
-                                                            <input type="hidden" name="package_total_amount" value="{{ $grand_total_amount }}" >
-
-
-                                                            </td>
-                                                            <td width="25%"><h4>Total Quantity: </h4></td>
-                                                            <td width="25%">
-                                                                <h4><span id="totalPackageqty">{{$grand_total_qty }}</span></h4>
-                                                                <input type="hidden" name="package_total_quantity" value="{{$grand_total_qty }}" >
-                                                            </td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            <div> -->
-
                                             <hr>
                                             <div class="col-md-8"  id="TotalDiv" style="display:none;">
                                                 <div class="body">
@@ -1009,15 +909,11 @@ body{
 
                                                             </div>
 
-
-
-
-
                                                                 <div class="row  pt-2">
                                                                     <div class="col-md-6"  style="text-align:right;">
                                                                         <label>Insurance </label>
                                                                     </div>
-                                                                    <div class="col-md-2"">
+                                                                    <div class="col-md-2">
                                                                         <div class="">
                                                                             <input type="text" name="insurance"
                                                                             value="{{$shipment->insurance}}" class="form-control insurance_weight tot_wgt">
@@ -1133,53 +1029,15 @@ body{
                                                                     </div>
 
                                                                 </div>
-
-
-
-
-
-
-
-
-
-                                                                {{-- <div class="row pt-2">
-                                                                        <div class="col-md-6"  style="text-align:right;">
-                                                                            <label>Other weight</label>
-                                                                        </div>
-                                                                        <div class="col-md-2" >
-                                                                            <div class="">
-                                                                                <input type="text" name="other_weight"
-                                                                                value="{{$shipment->other_weight}}" class="form-control other_weight tot_wgt">
-                                                                            </div>
-                                                                        </div>
-
-                                                                        <div class="col-md-2">
-                                                                            <div class="">
-                                                                                <input type="text" name="rate_other_weight" value="{{$shipment->rate_other_weight}}" class="form-control rate_other_weight tot_rate">
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="col-md-2">
-                                                                        <div class="">
-                                                                            <input type="text" name="amount_other_weight" value="{{ $shipment->amount_other_weight }}" class="form-control tot_amt">
-                                                                        </div>
-                                                                    </div>
-
-                                                                </div> --}}
+                                                            
 
                                                                 <div class="row">
-
 
                                                                         <div class="col-md-6 pt-2"  style="text-align:right;font-size:18px;font-weight:bold;">
 
                                                                         </div>
                                                                         <div class="col-md-2 pt-2" style="border-top:1px solid;">
-                                                                            <div class="">
-                                                                            {{-- <input type="text" name="normal_weight" value="{{$shipment->normal_weight}}" class="form-control tot_wgt1"> --}}
-
-                                                                            <!-- THIS VALUE IS USED FOR CALCULATION  normal_weight_temp-->
-                                                                            {{-- <input type="hidden" name="normal_weight_temp" value="{{$shipment->normal_weight}}" class="form-control tot_wgt1" readonly> --}}
-
-                                                                                <!-- <input type="text" name="grand_total_weight" value="{{ $normal_weight }}" class="form-control" readonly> -->
+                                                                            <div class="">  <!-- <input type="text" name="grand_total_weight" value="{{ $normal_weight }}" class="form-control" readonly> -->
                                                                             </div>
                                                                         </div>
 
@@ -1215,67 +1073,7 @@ body{
                                                                 </div>
 
                                                             </td>
-                                                            {{-- <td width="40%">
-                                                                <div class="row">
-
-
-                                                                    <div class="col-md-6 "  style="text-align:right;">
-                                                                        <label>Total Freight</label>
-                                                                    </div>
-                                                                    <div class="col-md-6 ">
-                                                                        <div class="">
-                                                                            <input type="text" name="total_freight"
-                                                                            value="{{$shipment->total_freight}}" class="form-control gtotal">
-                                                                        </div>
-                                                                    </div>
-
-
-                                                                    <div class="col-md-6"  style="text-align:right;">
-                                                                        <label>Box Packing Charge</label>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="">
-                                                                            <input type="text" name="packing_charge" value="{{ $shipment->packing_charge}}"  id="packing_charge" class="form-control gtotal">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-6"  style="text-align:right;">
-                                                                        <label>Other Packing Charge</label>
-                                                                    </div>
-                                                                    <div class="col-md-6 ">
-                                                                        <div class="">
-                                                                            <input type="text" name="other_charges" value="{{ $discount->other_packing_charge? $discount->other_packing_charge:0}}" class="form-control gtotal">
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-6"  style="text-align:right;">
-                                                                        <label>Document Charge</label>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="">
-                                                                            <input type="text" name="document_charge" value="{{ $discount->document_charge? $discount->document_charge:0}}" class="form-control  gtotal" step="any">
-
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-md-6"  style="text-align:right;">
-                                                                        <label>Discount</label>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="">
-                                                                        <input type="text" value="{{ $discount->discount? $discount->discount:0}}"
-                                                                        id="discount" name="discount" class="form-control discount">
-                                                                        </div>
-                                                                    </div>
-
-                                                                    <div class="col-md-6"  style="text-align:right;">
-                                                                        <label>Grand Total  {{ $shipment->grand_total}} </label>
-                                                                    </div>
-                                                                    <div class="col-md-6">
-                                                                        <div class="">
-                                                                            <input type="text" name="grand_total" value="{{ $shipment->grand_total}}" class="form-control">
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </td> --}}
+                                                         
 
                                                         </tr>
                                                     </table>
@@ -1326,130 +1124,99 @@ body{
                                                         <button type="button" id="removeBox" class="btn btn-danger removeBox">Delete Box</button>
                                                     </div>
                                                 </div>
-                                                <div class="row ">
-                                                    <p style="font-size: 12px;margin: unset; margin-left: 9px; color:red;" id="noBoxFound"></p>
-                                                    <div class="col-12 d-flex">
-                                                        <input type="text" class="form-control col-3 oldBoxNo" placeholder="Box number">
-                                                        <button type="button"  class="btn btn-primary col-1 ml-2 oldBoxFill fillAdress" >Fill</button>
-                                                    </div>
-                                                    <div class="col-5">
-                                                        <div class="form-group ">
-                                                            <label>Sender/Customer</label>
-                                                            {{-- <select name="box_sender_id" id="box_sender_id" class="form-control select2">
-                                                                <option value="">Select</option>
-                                                                @foreach (get_customers('sender') as $sender)
-                                                                    <option value="{{ $sender->id }}"
-                                                                        >{{ $sender->name }} </option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('sender_id')
-                                                                <span class="text-danger">{{ $message }}</span>
-                                                            @enderror --}}
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Name</label>
-                                                            <input type="text" name="sender_name[]"  class="form-control sender_name_1 sender_name">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Address</label>
-                                                            <textarea name="sender_address[]"  cols="10" rows="10" class="form-control sender_address_1 sender_address" style="height: 45px;"></textarea>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Pin</label>
-                                                            <input type="text" name="sender_pin[]" value="" class="form-control sender_pin_1 sender_pin" >
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Mobile</label>
-                                                            <input type="text" name="sender_mob[]"  class="form-control sender_mob_1 sender_mob">
-                                                        </div>
-
-                                                        <div class="form-group mb-2">
-                                                            <label>ID Type</label>
-                                                            <select name="sender_id_type[]" id="" class="form-control sender_id_type">
-                                                                <option value="Aadhaar Number">Aadhaar Number</option>\
-                                                                <option value="Passport Number">Passport Number</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group mb-2">
-                                                            <label>ID</label>
-                                                            <input type="text" name="sender_id_no[]"  class="form-control sender_id_no_1 sender_id_no">
-                                                        </div>
-
-                                                        <div class="form-group mb-2">
-                                                            <label>ID Image</label>
-                                                            <input type="file" name="sender_id_image[]"  class="form-control sender_id_img_1 sender_id_img" multiple>
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="col-5">
-                                                        <div class="form-group">
-                                                            <label>Receiver/Customer</label>
-                                                            {{-- <select name="box_receiver_id" id="box_receiver_id"
-                                                                    class="form-control select2">
-                                                                    <option value="">Select</option>
-                                                                @foreach (get_customers('receiver') as $receiver)
-                                                                    <option value="{{ $receiver->id }}"
-                                                                    >{{ $receiver->name }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                            @error('receiver_id')
-                                                                <span class="text-danger">{{ $message }}</span>
-                                                            @enderror --}}
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Name</label>
-                                                            <input type="text" name="receiver_name[]"  class="form-control receiver_name_1 receiver_name">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Address</label>
-                                                            <textarea name="receiver_address[]"  cols="10" rows="10" class="form-control receiver_address_1 receiver_address" style="height: 45px;"></textarea>
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Pin</label>
-                                                            <input type="text" name="receiver_pin[]" value="" class="form-control receiver_pin_1 receiver_pin">
-                                                        </div>
-
-                                                        <div class="form-group">
-                                                            <label>Mobile</label>
-                                                            <input type="text" name="receiver_mob[]"  class="form-control receiver_mob_1 receiver_mob">
-                                                        </div>
-
-                                                        <div class="form-group mb-2">
-                                                            <label>ID Type</label>
-                                                            <select name="receiver_id_type[]" id="" class="form-control receiver_id_type">
-                                                                <option value="Aadhaar Number">Aadhaar Number</option>\
-                                                                <option value="Passport Number">Passport Number</option>
-                                                            </select>
-                                                        </div>
-
-                                                        <div class="form-group mb-2">
-                                                            <label>ID</label>
-                                                            <input type="text" name="receiver_id_no[]"  class="form-control receiver_id_no_1 receiver_id_no">
-                                                        </div>
-
-
-                                                        <div class="form-group mb-2">
-                                                            <label>ID Image</label>
-                                                            <input type="file" name="receiver_id_image[]"  class="form-control receiver_id_img_1 receiver_id_img" multiple>
-                                                        </div>
-
-                                                    </div>
-                                                    <div class="col-md-2">
+                                                <div class="col-md-2">
                                                         <div class="form-group">
                                                             <label>Weight</label>
                                                             <input type="text" name="weight[]" value="" class="form-control box-weight1 weight">
                                                             {{-- <input type="text" name="weight" value="{{$weight->weight?$weight->weight:''}}" class="form-control box-weight1"> --}}
                                                         </div>
                                                     </div>
+                                                <div class="row">
+                                        <div class="col-lg-6 col-md-12">
+                                         
+                                            <div class="row">
+                                                <div class="form-group col-md-10">
+                                                    <label>Sender/Customer</label>
+                                                    <select name="sender_id[]" id="sender_id[]" class="form-control select2">
+                                                        @foreach (get_customers('sender') as $sender)
+                                                            <option value="{{ $sender->id }}"
+                                                            {{ ($shipment->sender_id== $sender->id) ? 'selected' : "" }} 
+                                                            data-identification_type="{{$sender->identification_type ?? ''}}"
+                                                        data-identification_number="{{$sender->identification_number ?? ''}}"
+                                                        data-name="{{$sender->name ?? ''}}"
+                                                        data-email="{{$sender->email ?? ''}}"
+                                                        data-phone="{{$sender->phone ?? ''}}"
+                                                          data-address="{{$sender->address->address ?? ''}}"
+                                                         data-whatsapp_number="{{$sender->whatsapp_number ?? ''}}"
+                                                        data-country_code_phone="{{$sender->country_code_phone ?? ''}}"
+                                                        data-country_code_whatsapp="{{$sender->country_code_whatsapp ?? ''}}" 
+                                                        data-country_id="{{$sender->address->country_id ?? ''}}"
+                                                        data-state_id="{{$sender->address->state_id ?? ''}}"
+                                                        data-district_id="{{$sender->address->district_id ?? ''}}"
+                                                        data-city_id="{{$sender->address->city_id ?? ''}}"
+                                                        data-zip_code="{{$sender->address->zip_code ?? ''}}">
+                                                    {{ strtoupper($sender->name) }} - {{ $sender->phone }}
+                                                        </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('sender_id')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+
                                                 </div>
+                                                <div class="col-md-2">
+                                                <button type="button" id="AddSender[]" class="btn btn-primary mt-sm-4"><i
+                                                class="fa fa-plus"></i></button>
+                                                            <button type="button" id="EditSender[]" class="btn btn-primary mt-sm-4"><i
+                                                            class="fa fa-pen"></i></button>
+                                                </div>
+
+                                            </div>
+                 
+                                        </div>
+                                        <div class="col-lg-6 col-md-12">
+                                            
+                                            <div class=" row">
+                                                <div class="form-group col-md-10">
+                                                    <label>Receiver/Customer</label>
+                                                    <select name="receiver_id[]" id="receiver_id[]"
+                                                            class="form-control select2">
+                                                        @foreach (get_customers('receiver') as $receiver)
+                                                            <option value="{{ $receiver->id }}"
+                                                            {{ ($shipment->receiver_id== $receiver->id) ? 'selected' : "" }}
+                                                            data-identification_type="{{$receiver->identification_type ?? ''}}"
+                                                        data-identification_number="{{$receiver->identification_number ?? ''}}"
+                                                        data-name="{{$receiver->name ?? ''}}"
+                                                        data-email="{{$receiver->email ?? ''}}"
+                                                        data-phone="{{$receiver->phone ?? ''}}"
+                                                          data-address="{{$receiver->address->address ?? ''}}"
+                                                         data-whatsapp_number="{{$receiver->whatsapp_number ?? ''}}"
+                                                        data-country_code_phone="{{$receiver->country_code_phone ?? ''}}"
+                                                        data-country_code_whatsapp="{{$receiver->country_code_whatsapp ?? ''}}" 
+                                                        data-country_id="{{$receiver->address->country_id ?? ''}}"
+                                                        data-state_id="{{$receiver->address->state_id ?? ''}}"
+                                                        data-district_id="{{$receiver->address->district_id ?? ''}}"
+                                                        data-city_id="{{$receiver->address->city_id ?? ''}}"
+                                                        data-zip_code="{{$receiver->address->zip_code ?? ''}}">
+                                                    {{ strtoupper($receiver->name) }} - {{ $receiver->phone }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('receiver_id')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" id="AddReceiver[]" class="btn btn-primary mt-4"><i
+                                                            class="fa fa-plus"></i></button>
+                                                            <button type="button" id="EditReceiver[]" class="btn btn-primary mt-4"><i
+                                                            class="fa fa-pen"></i></button>
+                                                </div>
+                                            </div>
+                                            
+                                        </div>
+                                    </div> 
+                                              
                                                 <div class="body box_und_calc" id="packageinfo">
 
                                                     <table class="table table-bordered packageinfo">
