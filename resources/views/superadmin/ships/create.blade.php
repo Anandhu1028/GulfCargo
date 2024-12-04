@@ -1,0 +1,206 @@
+@extends('layouts.app')
+
+@section('content')
+<style>
+.boxContainer{
+    border:1px solid black;
+    padding:5px;
+    margin-top:5px;
+}
+.icons {
+    padding:5px;
+    font-size:x-small;
+}
+</style>
+    <div class="content-page" id="content-page">
+        <div class="content">
+
+            <!-- Start Content-->
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box">
+                            <div class="page-title-right">
+                                {!! breadcrumbs() !!}
+                            </div>
+                            <h4 class="page-title">{{page_title()}}</h4>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class="row ">
+                    <div class="col-md-12 ">
+                        <div class="card-box ">
+
+                            <form action="/super-admin/ship/create" method="get" enctype="multipart/form-data">
+                                @csrf
+                                <div class="text-center  ">
+                                    <di class="row ">
+                                        <div class="col-3 ">
+                                            <div class="form-group ">
+                                                <select name="branch_id" id="" class="form-control">
+                                                    <option value="">All branches</option>
+                                                    @foreach ($branches as $branche)
+                                                        <option value="{{$branche->id}}">{{$branche->name}}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-2">
+                                            <button type="submit" class="btn btn-success waves-effect waves-light ">Submit
+                                            </button>
+                                        </div>
+                                    </di>
+                                </div>
+                            </form>
+                            <!-- end form -->
+
+                        </div>
+                        <!-- end card-box -->
+                    </div>
+                    <!-- end col -->
+                </div>
+                <!-- end row -->
+
+
+
+                <div class="row">
+                    <div class="col-sm-12">
+                      <div class="card-box">
+                            <table id="datatable1" class="table table-striped table-bordered nowrap">
+                                <thead>
+                                <tr>
+                                    <th style="display:none;">Ship ID </th>
+                                    <th style="text-align: center" colspan="">Action</th>
+                                    <th>Shipment No:</th>
+                                    <th>Shipment Type</th>
+                                    <th>Port of Origin</th>
+                                    <th>Port of Destination</th>
+                                    <th>Clearing Agent</th>
+                                    <th>Shipment Status</th>
+                                    {{-- <th>Created by</th> --}}
+                                    <th>Created On</th>
+                                    <th>Total Box</th>
+                                    <th>Total Weight</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach( $ships as $ship)
+                                    <?php
+                                        $boxDetails = \App\Models\Boxes::with('shipment.driver','boxStatuses.status','shipment.shipmentStatus')->whereHas('shipment',function ($query) {
+                                            ;
+                                        })->where('ship_id',$ship->id)->where('is_shipment',1)->get();
+                                        $tot_weight_exist = 0;
+                                        $tot_value_exist = 0;
+                                        $tot_temp_exist =0;
+                                        $totalPieces =0;
+                                        $count = 0;
+                                        $lastStatus = '';
+                                        $hrefTag = "#";
+                                        $statusList = [];
+                                        foreach( $boxDetails as $key => $booking) {
+                                            $lastStatus = collect($booking->boxStatuses)->last();
+                                            $boxDetails[$key]["last_status"] = $lastStatus->status->name;
+
+                                            $tot_temp_exist= $booking->weight;
+                                            $tot_weight_exist +=$tot_temp_exist;
+                                            $tot_value_exist += (float)$booking->total_value + (float)$booking->box_packing_charge;
+                                            $totalPieces += 1;
+
+                                            if(($lastStatus != null)) {
+                                                $statusList[] = $booking->last_status;
+
+                                                $delete_item = 'Pending';
+                                                $delete_item1 = 'Shipment on hold';
+                                                $statusListNew = array_diff($statusList, array($delete_item,$delete_item1));
+                                                $count1 = array_count_values($statusListNew);
+                                                $count = count($statusListNew);
+                                                $getNum = $count - 1;
+                                                // $status = implode(', ', $statusListNew);
+                                                $shipmentStatus = collect($booking->shipment->shipmentStatus)->last();
+                                                if($count <= 0) {
+                                                    $status =  $ship->shipmentStatus->name;
+                                                } else {
+                                                    $status =  $statusList[$getNum];
+                                                }
+                                            }
+                                            if($booking->is_transfer == 1) {
+                                                $hrefTag = "transfer";
+                                            }
+                                        }
+                                        $lastStatus = ($totalPieces != 0 ) ?  $status : $ship->shipmentStatus->name ;
+                                    ?>
+                                    <tr>
+                                        <td style="display:none;">{{$ship->id}}</td>
+                                        <td>
+                                            {{-- <a href="super-admin/ship/shipEdit/{{$ship->id}} "
+                                                class="btn btn-icon waves-effect waves-light btn-warning icons" title="Edit Shipment">
+                                                <i class="fas fa-pencil-alt"></i>
+                                            </a> --}}
+                                            {{-- <a href="super-admin/ship/detailedView/{{$ship->id}}" class="btn btn-icon waves-effect waves-light btn-warning icons" title="Shipment Detailed View">
+                                                <i class="fas  fa-lg fa-eye"></i>
+                                            </a> --}}
+                                            <a @if($hrefTag != 'transfer') href="{{route('super-admin.ships.addbookingtoship',array('ship_id' => $ship->id, 'branch_id'=>$ship->branch_id))}}" @endif  class="btn btn-icon waves-effect waves-light btn-warning icons" title="View">
+                                                <i class="fas  fa-lg fa-cog"></i>
+                                            </a>
+                                            {{-- <a href="{{route('branch.ships.addMoreBookingtoship', array('ship_id' => $ship->id))}}" class="btn btn-icon waves-effect waves-light btn-warning icons" title="Add Booking">
+                                                <i class="fas  fa-lg fa-plus"></i>
+                                            </a>                                       --}}
+                                        </td>
+                                        <td>{{$ship->shipment_id}}</td>
+                                        <td>{{$ship->shipmentMethodTypes->name}}</td>
+                                        <td>{{$ship->portOfOrigins->name??''}}</td>
+                                        <td>{{$ship->portOfDestinations->name??''}}</td>
+                                        <td>{{$ship->clearingAgents->name??''}}</td>
+                                        <td>{{ $lastStatus }}</td>
+                                        {{-- <td>{{$ship->createdBy->full_name}}</td> --}}
+                                        <td>{{ !empty($ship->created_date) ? date('Y-m-d',strtotime($ship->created_date)) : '' }}</td>
+                                        <td>{{($totalPieces == 0) ? '' : $totalPieces}}</td>
+                                        <td>{{($tot_weight_exist == 0 ? '' : $tot_weight_exist)}}</td>
+                                    </tr>
+                                    @endforeach
+
+                                </tbody>
+                            </table>
+                            <div class="d-flex justify-content-end">
+                                {{ $ships->onEachSide(1)->links() }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <!-- end container-fluid -->
+
+        </div>
+        <!-- end content -->
+
+
+
+    </div>
+@endsection
+@section('styles')
+    @include('layouts.datatables_style')
+@endsection
+
+@section('scripts')
+@include('layouts.datatables_js')
+<script>
+    $(document).ready(function () {
+        $('#example').DataTable();
+        $('#datatable1').DataTable({
+            "ordering": false,
+            "scrollX": true,
+            "paging": false,
+            "responsive": false,
+              'columnDefs' : [
+                //hide the second & fourth column
+                { 'visible': false, 'targets': [0] }
+            ]
+        });
+    });
+</script>
+@endsection

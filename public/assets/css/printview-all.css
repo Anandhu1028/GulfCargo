@@ -1,0 +1,241 @@
+@media print {
+    @page {
+      margin: 0;
+      size: A4 !important;
+
+    }
+    /* .printxxxx {
+      page-break-after: always;
+    } */
+    .printable-invoice {
+          page-break-before: always;
+      }
+
+    td{
+      padding:0px !important;
+    }
+      h4{
+          padding:0px !important;
+          margin:0px !important;
+
+      }
+      #print_button button{
+          display:none;
+      }
+      .address {
+          font-size: 14px !important;
+      }
+      .item_table{
+        /* margin-left: -8px !important; */
+        width: 105.9% !important;
+        max-width: none !important;
+      }
+      .main_div{
+        font-size: 10px !important;
+    }
+    .hr_line_col{
+        height: 30px;
+        max-width:none;
+        width:103% !important;
+      }
+
+
+
+}
+
+    .main_div{
+        font-size: 10px !important;
+
+    }
+
+      .pod{
+          height: 155px;
+      }
+      .container {
+          width: 100%;
+
+
+      }
+      .main_div{
+          border: solid 1px #000 !important;
+      }
+      .ml-4{
+          margin-left: 30px;
+      }
+      .ml-3{
+          margin-left: 15px;
+      }
+      .inv_no{
+          background: black;
+          color: #fff;
+          width: 140px;
+          padding: 5px;
+          text-align: center !important;
+      }
+      .table_head th{
+          border-bottom: solid 1px #000 ;
+          border-top: solid 1px #000 ;
+      }
+      input[type="checkbox"] {
+          transform: scale(1); /* Change the scale value to adjust the size */
+      }
+      input[type="checkbox"] {
+          border-width: 3px; /* Change the border-width value to adjust the width */
+      }
+      .pacling_list td{
+          border-right: solid 1px #000 ;
+          border-bottom: solid 1px #000 !important;
+      }
+
+      .pacling_list th{
+          border-right: solid 1px #000 ;
+          border-top: solid 1px #000 !important;
+          background: #d9d9d9;
+      }
+      .pacling_list .sno{
+          background: #d9d9d9;
+      }
+
+      .pacling_list thead{
+        border-bottom: solid 1px;
+      }
+
+      .adress_table td{
+          padding: 1px;
+      }
+      .item_table td, th{
+          padding: 1px;
+      }
+      .item_table{
+        margin-left: -12px;
+        width: 103.2%;
+        max-width: none !important;
+      }
+
+      .footer b, p {
+          margin:1px;
+          text-align: justify;
+      }
+
+      .header h6{
+          font-size: 12px;
+      }
+
+      @media screen and (max-width: 600px) {
+          .shipment-info {
+          text-align: left;
+          }
+      }
+      #printButton {
+          position: fixed;
+          top: 30px;
+          left: 30px;
+          padding: 10px 20px;
+          font-size: 16px;
+          background-color: #c52014;
+          color: #fff;
+          border: none;
+          border-radius: 15px;
+          cursor: pointer;
+          z-index: 1000;
+          width: 95px
+      }
+
+      #printButton:hover {
+          background-color: #009eb3;
+      }
+
+    .header img{
+        height:60px;
+    }
+
+    .head_frm_to th{
+        padding-left:100px;
+    }
+
+    .adress_table_first_div{
+      margin-top: -16px;
+      border-right : solid 1px #000 !important;
+      border-bottom: solid 1px #000 !important;
+      border-width: 1px !important;
+      margin-left: -3px;
+      padding-top: 5px;
+
+    }
+
+    .adress_table_sec_div{
+      border-bottom:solid 1px #000 !important;
+      border-width: 1px !important;
+      margin-top: -16px;
+      font-size: 11px;
+    }
+
+    .adress_table_thrd_div{
+      border:solid 1px #000 !important;
+      border-top:none !important;
+      border-width: 1px !important;
+      margin-top: -16px;
+      padding-top: 5px;
+    }
+
+  .adress_table_frth_div{
+      border-bottom:solid 1px #000 !important;
+      border-width: 1px !important;
+      margin-top: -16px;
+      font-size: 11px;
+  }
+
+  .adress_table_fifth_div{
+      border:solid 1px #000 ;
+      border-top:none !important;
+      border-width: 1px !important;
+      margin-top: -16px;
+      border-right: none;
+      padding-top: 5px;
+  }
+
+  .item_tbl_1{
+      border-left: solid 1px #000 !important;
+  }
+
+  .item_tbl_1  thead{
+      border-bottom: solid 1px !important;
+  }
+
+  .decl_left{
+      margin-top: -25px;
+  }
+
+  .pod{
+      background: gray;
+      color:#fff;
+  }
+
+  .sino_hed_2{
+    border-left: solid 1px;
+  }
+  .tot_val_hed_1{
+    border-right: solid 0 !important;
+  }
+
+  .tot_val_hed_2{
+    border-right: none !important;
+  }
+
+  .hr_line_col{
+    height: 30px;
+    max-width:none;
+    width:102%;
+  }
+
+  .service_2{
+    margin-left: 21px !important;
+  }
+
+  .service_3{
+    margin-left: 39px !important;
+  }
+
+  .service_4{
+    margin-left: 44px !important;
+  }
