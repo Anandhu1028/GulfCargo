@@ -119,6 +119,9 @@ class ShipmentController extends BaseController
                         })
                         ->orWhereHas('receiver', function ($query) use ($search) {
                             $query->where('whatsapp_number', 'like', "%$search%");
+                        })
+                        ->orWhereHas('sender', function ($query) use ($search) {
+                            $query->where('identification_number', 'like', "%$search%");
                         });
                 });
             }
@@ -937,18 +940,28 @@ class ShipmentController extends BaseController
 
 
 
-                        $Box_sender = new Box_sender_reciver();
-                        $Box_sender->shipment_id = $shipments->id;
-                        $Box_sender->name = $request->input("sender_name".$j);
-                        $Box_sender->address = $request->input("sender_address".$j);
-                        $Box_sender->mobile = $request->input("sender_mob".$j);
-                        $Box_sender->pin = $request->input("sender_pin".$j);
-                        $box->sender_id_type = $request->input("sender_id_type".$j);
-                        $Box_sender->id_no = $request->input("sender_id_no".$j);
-                        isset($sender_fileName) ? $Box_sender->id_image = $sender_fileName: $Box_sender->id_image = $request->input("sender_id_image_value".$j);
-                        $Box_sender->type = 1;
-                        $Box_sender->box_id = $request->input("box_name".$j);
-                        $Box_sender->save();
+                        // $Box_sender = new Box_sender_reciver();
+                        // $Box_sender->shipment_id = $shipments->id;
+                        // $Box_sender->name = $request->input("sender_name".$j);
+                        // $Box_sender->address = $request->input("sender_address".$j);
+                        // $Box_sender->mobile = $request->input("sender_mob".$j);
+                        // $Box_sender->pin = $request->input("sender_pin".$j);
+                        // $box->sender_id_type = $request->input("sender_id_type".$j);
+                        // $Box_sender->id_no = $request->input("sender_id_no".$j);
+                        // isset($sender_fileName) ? $Box_sender->id_image = $sender_fileName: $Box_sender->id_image = $request->input("sender_id_image_value".$j);
+                        // $Box_sender->type = 1;
+                        // $Box_sender->box_id = $request->input("box_name".$j);
+                        // $Box_sender->save();
+                        $senderPhone = $request->input("sender_mob" . $j);
+                        $customer = Customer::where('phone', $senderPhone)->first();
+
+                        if ($customer) {
+                            $box->sender_name = $customer->name;
+                            $box->sender_address = $customer->address;
+                            $box->sender_mob = $customer->phone;
+                            $box->sender_id_type = $customer->id_type;
+                        }
+
 
                         $Box_receiver = new Box_sender_reciver();
                         $Box_receiver->shipment_id = $shipments->id;

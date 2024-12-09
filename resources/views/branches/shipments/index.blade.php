@@ -93,8 +93,9 @@
                                     <th>Sender<br>Name</th>
                                     <th>Sender<br>Phone</th>
                                     <th>Receiver<br>Name</th>
-                                    <th>Receiver<br>Country</th>
+                                    <th>Receiver<br>Country</th>             
                                     <th>Receiver<br>State</th>
+                                    <th>Document<br>Id</th>
                                     <th>Shipping<br>Status</th>
                                     <th>Payment<br>Method</th>
                                     <th>Courier<br>Company</th>
@@ -208,6 +209,7 @@
                                         <td>{{ $shipment->receiver->name??""}}</td>
                                         <td>{{ $shipment->receiver->address->country->name??""}}</td>
                                         <td>{{ $shipment->receiver->address->state->name??""}}</td>
+                                        <td>{{ $shipment->sender->identification_number }}</td>
                                         <td><span {{  (!empty($lastStatus))?$style:''}}>{{  $lastStatus??'' }}</span></td>
                                         <td>{{ $shipment->payment_method }}</td>
                                         <td>{{ $shipment->agency?$shipment->agency->name:'-' }}</td>

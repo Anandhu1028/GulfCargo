@@ -564,6 +564,16 @@ body{
                                                 </div>
 
                                             </div>
+                                            <div class="row form-group col-md-12">
+                                                
+                                                <input readonly type="hidden" id="sender_address" value="{{$shipment->sender->address->address??""}}" class="form-control">
+                                            </div>
+
+                                            <div class="row form-group col-md-12">
+                                               
+                                                <input readonly type="hidden" id="sender_phone" value="{{$shipment->sender->phone??""}}" class="form-control">
+                                            </div>
+                                            
                  
                                         </div>
                                         <div class="col-lg-6 col-md-12">
@@ -605,6 +615,16 @@ body{
                                                             class="fa fa-pen"></i></button>
                                                 </div>
                                             </div>
+                                            <div class="row form-group col-md-12">
+                                              
+                                                <input type="hidden" id="receiver_address" value="{{$shipment->receiver->address->address??""}}" class="form-control">
+                                            </div>
+                                            
+                                            <div class="row form-group col-md-12">
+                                               
+                                                <input type="hidden" id="receiver_phone" value="{{$shipment->receiver->phone??""}}" class="form-control">
+                                            </div>
+                                            
                                             
                                         </div>
                                     </div> 
@@ -1578,6 +1598,208 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 
+$(document).ready(function () {
+    // Loop through all Add and Edit buttons dynamically and attach event listeners
+    $('.btn-primary').each(function () {
+        let index = $(this).attr('id').match(/(\d+)$/); // Dynamically extract index number
+        if (index) {
+            let i = index[0];
+
+            // Handle "Add Receiver" click for each index
+            $(`#AddReceiver${i}`).click(function () {
+                openReceiverModal("add", i);
+            });
+
+            // Handle "Edit Receiver" click for each index
+            $(`#EditReceiver${i}`).click(function () {
+                openReceiverModal("edit", i);
+            });
+        }
+    });
+
+    function openReceiverModal(mode, index) {
+        if (mode === "add") {
+            $('#AddClient h4.modal-title').text("Add Receiver");
+            $('#AddClient #clientType').val("receiver");
+            $('#AddClient').modal('show');
+        }
+
+        if (mode === "edit") {
+            let selectedOption = $(`#box_receiver_id${index}`).find('option:selected');
+            let receiverId = selectedOption.val();
+
+            if (receiverId) {
+                $('#AddClient .modal-title').text("Edit Receiver");
+                $('#receiver_id_input').val(receiverId); 
+                $('#save_data_user').hide();
+                $('#update_data_receiver').show();
+                $('#update_data_user').hide();
+                populateFieldsForEditReceiver(selectedOption);
+                $('#AddClient').modal('show');
+            } else {
+                alert('Please select a receiver to edit.');
+            }
+        }
+    }
+
+    function populateFieldsForEditReceiver(option) {
+        $('#receiver_address').val(option.data('address'));
+        $('#receiver_phone').val(option.data('phone'));
+        $('#country_code_whatsapp').val(option.data('country_code_whatsapp'));
+        $('#country_code_phone').val(option.data('country_code_phone'));
+        $('#client_identification_type').val(option.data('identification_type'));
+        $('#client_identification_number').val(option.data('identification_number'));
+        $('#zip_code').val(option.data('zip_code'));
+        $('#state_id').val(option.data('state_id')).trigger('change');
+        $('#city_id').val(option.data('city_id')).trigger('change');
+    }
+
+    $('#update_data_receiver').click(function () {
+        let selectedOption = $('#receiver_id').find('option:selected');
+        let receiverId = selectedOption.val();
+        let formData = new FormData($('#add_client_shipments')[0]);
+
+        $.ajax({
+            url: `/branch/shipment/update-receiver/${receiverId}`,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#AddClient').modal('hide');
+                    $(`#box_receiver_id${response.index} option[value="${receiverId}"]`).remove();
+                    $(`#box_receiver_id${response.index}`).append(
+                        `<option value="${receiverId}" 
+                            data-identification_type="${response.data.identification_type}"
+                            data-identification_number="${response.data.identification_number}"
+                            data-name="${response.data.name}"
+                            data-email="${response.data.email}"
+                            data-phone="${response.data.phone}"
+                            data-address="${response.data.address}"
+                            data-whatsapp_number="${response.data.whatsapp_number}"
+                            data-country_code_phone="${response.data.country_code_phone}"
+                            data-country_code_whatsapp="${response.data.country_code_whatsapp}"> 
+                            ${response.data.name.toUpperCase()} - ${response.data.phone}</option>`
+                    );
+                    $(`#box_receiver_id${response.index}`).val(receiverId);
+                } else {
+                    alert('Failed to update receiver details.');
+                }
+            },
+            error: function () {
+                alert('Something went wrong!');
+            }
+        });
+    });
+});
+
+
+$(document).ready(function () {
+    // Loop through all Add and Edit buttons dynamically and attach event listeners
+    $('.btn-primary').each(function () {
+        let index = $(this).attr('id').match(/(\d+)$/); // Dynamically extract index number
+        if (index) {
+            let i = index[0];
+
+            // Handle "Add Sender" click for each index
+            $(`#AddSender${i}`).click(function () {
+                openReceiverModal("add", i);
+            });
+
+            // Handle "Edit Sender" click for each index
+            $(`#EditSender${i}`).click(function () {
+                openReceiverModal("edit", i);
+            });
+        }
+    });
+
+    function openReceiverModal(mode, index) {
+        if (mode === "add") {
+            $('#AddClient h4.modal-title').text("Add Sender");
+            $('#AddClient #clientType').val("sender");
+            $('#AddClient').modal('show');
+        }
+
+        if (mode === "edit") {
+            let selectedOption = $(`#box_sender_id${index}`).find('option:selected');
+            let receiverId = selectedOption.val();
+
+            if (receiverId) {
+                $('#AddClient .modal-title').text("Edit Sender");
+                $('#receiver_id_input').val(receiverId); 
+                $('#save_data_user').hide();
+                $('#update_data_sender').show();
+                $('#update_data_user').hide();
+                populateFieldsForEditReceiver(selectedOption);
+                $('#AddClient').modal('show');
+            } else {
+                alert('Please select a sender to edit.');
+            }
+        }
+    }
+
+    function populateFieldsForEditReceiver(option) {
+        $('#sender_address').val(option.data('address'));
+        $('#sender_phone').val(option.data('phone'));
+        $('#country_code_whatsapp').val(option.data('country_code_whatsapp'));
+        $('#country_code_phone').val(option.data('country_code_phone'));
+        $('#client_identification_type').val(option.data('identification_type'));
+        $('#client_identification_number').val(option.data('identification_number'));
+        $('#zip_code').val(option.data('zip_code'));
+        $('#state_id').val(option.data('state_id')).trigger('change');
+        $('#city_id').val(option.data('city_id')).trigger('change');
+    }
+
+    $('#update_data_sender').click(function () {
+        let selectedOption = $('#sender_id').find('option:selected');
+        let receiverId = selectedOption.val();
+        let formData = new FormData($('#add_client_shipments')[0]);
+
+        $.ajax({
+            url: `/branch/shipment/update-sender/${senderId}`,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function (response) {
+                if (response.success) {
+                    $('#AddClient').modal('hide');
+                    $(`#box_sender_id${response.index} option[value="${senderId}"]`).remove();
+                    $(`#box_sender_id${response.index}`).append(
+                        `<option value="${senderId}" 
+                            data-identification_type="${response.data.identification_type}"
+                            data-identification_number="${response.data.identification_number}"
+                            data-name="${response.data.name}"
+                            data-email="${response.data.email}"
+                            data-phone="${response.data.phone}"
+                            data-address="${response.data.address}"
+                            data-whatsapp_number="${response.data.whatsapp_number}"
+                            data-country_code_phone="${response.data.country_code_phone}"
+                            data-country_code_whatsapp="${response.data.country_code_whatsapp}"> 
+                            ${response.data.name.toUpperCase()} - ${response.data.phone}</option>`
+                    );
+                    $(`#box_sender_id${sender.index}`).val(senderId);
+                } else {
+                    alert('Failed to update sender details.');
+                }
+            },
+            error: function () {
+                alert('Something went wrong!');
+            }
+        });
+    });
+});
+
+
+
+
 
 
 
@@ -1619,6 +1841,80 @@ document.addEventListener('DOMContentLoaded', function() {
             allowClear: true,
             matcher: matchCustom
         });
+
+
+        $(document).ready(function() {
+        // Initialize select2 for Sender
+        $('#box_sender_id{{$i+1}}').select2({
+            placeholder: "Select a sender", // Placeholder text
+            allowClear: true,  // Allow clearing of selection
+            matcher: matchCustom  // Custom matching function (ensure it's defined elsewhere)
+        });
+
+        // Initialize select2 for Receiver
+        $('#box_receiver_id{{$i+1}}').select2({
+            placeholder: "Select a receiver",  // Change placeholder to reflect 'receiver'
+            allowClear: true,  // Allow clearing of selection
+            matcher: matchCustom  // Custom matching function (ensure it's defined elsewhere)
+        });
+    });
+    
+
+
+
+
+    $(document).ready(function () {
+    $('#AddReceiver').click(function () {
+        $('#AddClient .modal-title').text("Add Receiver");
+        $('#clientType').val("receiver");
+        $('.id_no label').text("Receiver ID");
+        $('.id_type label').text("Receiver Identification Type");
+
+        $('#state_id').html('');
+        <?php foreach ($previous_receiver_state as $key => $value) { ?>
+            $('#state_id').append("<option value='<?=$value->id?>'><?=$value->name?></option>");
+        <?php } ?>
+
+        $('#city_id').html('');
+        <?php foreach ($previous_receiver_city as $key => $value) { ?>
+            $('#city_id').append("<option value='<?=$value->id?>'><?=$value->name?></option>");
+        <?php } ?>
+
+        $("#phone").attr("maxlength", <?=$prev_receiver_phon_length->phone_no_length?>);
+        $("#whatsapp_number").attr("maxlength", <?=$prev_receiver_phon_length->phone_no_length?>);
+
+        $('#AddClient').modal('show');
+    });
+
+    $('#EditReceiver').click(function () {
+        const selectedOption = $('#receiver_id').find('option:selected');
+        const receiverId = selectedOption.val();
+
+        if (receiverId) {
+            $('#AddClient .modal-title').text("Edit Receiver");
+            $('#receiverId').val(receiverId);
+            $('#save_data_user').hide();
+            $('#update_data_receiver').show();
+
+            // Populate fields for editing (replace with your logic)
+            populateFieldsForEditReceiver(selectedOption);
+
+            $('#AddClient').modal('show');
+        } else {
+            alert('Please select a receiver to edit.');
+        }
+    });
+});
+
+function populateFieldsForEditReceiver(selectedOption) {
+    // Replace this with logic to populate fields with data from the selected receiver
+    console.log("Populating fields for editing receiver:", selectedOption);
+}
+
+
+
+
+
 
 
     const grand_total = document.querySelector('input[name="grand_total_weight"]');
@@ -2344,7 +2640,7 @@ $("#saveDraft").on('click',function(e){
                 var phone = $(this).find(":selected").data('phone');
                 $("#sender_address").val(address);
                 $("#sender_phone").val(phone);
-
+     
             });
             $('#receiver_id').on('change', function () {
                 var address = $(this).find(":selected").data('address');
@@ -2358,8 +2654,50 @@ $("#saveDraft").on('click',function(e){
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 }
             });
+           
+            $(document).ready(function() {
+    // Event listener for change on box_sender_id dropdown
+    $('#box_sender_id{{$i+1}}').on('change', function () {
+        var selectedSenderId = $(this).val();  // Get the selected sender ID
+
+        if (!selectedSenderId) {
+            return; // If no sender is selected, exit early
+        }
+
+        // Log the selected sender ID for debugging
+        console.log("Selected Sender ID: " + selectedSenderId);
+
+        $.ajax({
+            url: '/sender-details',  // Make sure this matches your route in web.php
+            method: 'GET',
+            data: { sender_id: selectedSenderId },
+            success: function(response) {
+                console.log(response);  // Debug the response
+                if (response.status === 'success') {
+                    // Update address and phone input fields with the data from the response
+                    $("#sender_address").val(response.data.address);
+                    $("#sender_phone").val(response.data.phone);
+
+                    // Optionally, change background color to indicate the change
+                    $("#sender_address").css('background-color', '#FFFFE0');
+                    $("#sender_phone").css('background-color', '#FFFFE0');
+                } else {
+                    alert('Sender data not found!');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error("AJAX Error: " + status + ", " + error);
+                alert('An error occurred while fetching the sender data.');
+            }
+        });
+    });
+});
+
+         
 
 
+
+       
              $('#AddSender').click(function () {
 
                 $('#AddClient h4.modal-title').text("Add Sender");

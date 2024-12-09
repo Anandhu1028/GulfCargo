@@ -257,10 +257,10 @@
                 <div class="headermaindiv">
                 <div class="header">
                     <img src="{{isset($shipment->agency->logo)?asset($shipment->agency->logo):'' }}" alt="Logo">
-                   <i><p class="logotext">"where every shipment tells a story"</p></i>
+                   {{-- <i><p class="logotext">"where every shipment tells a story"</p></i> --}}
                 </div>
                 <div class="header">
-                    <h1 class="headerh1">Gulfinternational Cargo Packaging L.L.C</h1>
+                    <h1 class="headerh1">Gulfinternational </h1>
                     <h1 class="headarabic">الخليج الدولية لتغليف البضائع ذ.م.م</h1>
                     <p>UAE | KSA | INDIA | SRILANKA</p>
                     <div class="mail-div">
